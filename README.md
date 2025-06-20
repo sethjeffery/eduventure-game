@@ -1,6 +1,6 @@
 # 🎭 EduVenture - AI-Powered Educational Adventure Game
 
-A modern educational choose-your-own-adventure game built with Next.js, featuring AI-generated stories powered by OpenAI with integrated learning experiences.
+A modern educational choose-your-own-adventure game built with Next.js and lots of AI, featuring AI-generated stories powered by OpenAI with integrated learning experiences.
 
 ## ✨ Features
 
@@ -25,7 +25,7 @@ A modern educational choose-your-own-adventure game built with Next.js, featurin
 1. Clone the repository:
 
 ```bash
-git clone <your-repo-url>
+git clone git@github.com:sethjeffery/eduventure-game.git
 cd eduventure-game
 ```
 
