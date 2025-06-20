@@ -1,5 +1,7 @@
 # 🎭 EduVenture - AI-Powered Educational Adventure Game
 
+https://eduventure-game.vercel.app/
+
 A modern educational choose-your-own-adventure game built with Next.js and lots of AI, featuring AI-generated stories powered by OpenAI with integrated learning experiences.
 
 ## ✨ Features
