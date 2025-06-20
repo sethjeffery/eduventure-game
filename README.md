@@ -1,15 +1,17 @@
-# 🎭 EduVenture - AI-Powered Choose Your Own Adventure
+# 🎭 EduVenture - AI-Powered Educational Adventure Game
 
-A modern choose-your-own-adventure game engine built with Next.js, featuring AI-generated stories powered by OpenAI.
+A modern educational choose-your-own-adventure game built with Next.js, featuring AI-generated stories powered by OpenAI with integrated learning experiences.
 
 ## ✨ Features
 
+- **🎓 Educational Focus**: Interactive learning through adventure with subject-based questions
 - **🎮 Interactive Gameplay**: Rich storytelling with multiple branching paths
-- **🎯 Dynamic Choices**: Multiple paths and consequences for your decisions
-- **📊 Stats Tracking**: Character progression with customizable attributes
+- **🎯 Smart Choice System**: Mix of adventure and educational choices with consequences
+- **📊 Health System**: Strategic gameplay with heart-based health management
 - **🤖 AI Story Generation**: Create unlimited adventures using OpenAI prompts
-- **🎨 Beautiful UI**: Modern glass morphism design with responsive layout
+- **🎨 Beautiful UI**: Modern gradient design with responsive layout
 - **📱 Mobile-Friendly**: Optimized for both desktop and mobile devices
+- **🖼️ AI Image Generation**: Optional DALL-E powered images for story steps
 
 ## 🚀 Getting Started
 
@@ -33,11 +35,17 @@ cd eduventure-game
 npm install
 ```
 
-3. Set up your OpenAI API key:
+3. Set up your OpenAI API key by creating a `.env.local` file:
 
 ```bash
-cp .env.local.example .env.local
-# Edit .env.local and add your OpenAI API key
+# Create .env.local file in the root directory
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Feature Flags
+# Set to "true" to enable AI image generation for story steps (expensive!)
+# Set to "false" or remove to disable image generation (recommended for cost control)
+NEXT_PUBLIC_ENABLE_IMAGE_GENERATION=false
+ENABLE_IMAGE_GENERATION=false
 ```
 
 4. Run the development server:
@@ -53,17 +61,7 @@ npm run dev
 ### OpenAI Setup
 
 1. Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
-2. Create a `.env.local` file in the root directory:
-
-```bash
-OPENAI_API_KEY=your_openai_api_key_here
-
-# Feature Flags
-# Set to "true" to enable AI image generation for story steps (expensive!)
-# Set to "false" or remove to disable image generation (recommended for cost control)
-NEXT_PUBLIC_ENABLE_IMAGE_GENERATION=false
-ENABLE_IMAGE_GENERATION=false
-```
+2. Create a `.env.local` file in the root directory with the environment variables shown above
 
 ### Image Generation (Optional)
 
@@ -81,73 +79,87 @@ To enable image generation:
 
 ## 🎮 How to Play
 
-1. **Choose Adventure Type**:
+1. **Choose Educational Subject**:
 
-   - Play the sample "Mysterious Forest" adventure
-   - Generate a new adventure with AI
+   - Select from Mathematics, Science, History, Geography, or English
+   - Each subject provides context for educational questions during the adventure
 
-2. **AI Adventure Generation**:
+2. **Select Difficulty Level**:
+
+   - **Easy**: 7 story steps, simpler concepts
+   - **Medium**: 10 story steps, moderate complexity
+   - **Hard**: 15 story steps, advanced challenges
+
+3. **Create Your Adventure**:
 
    - Enter a creative prompt (e.g., "A space station mystery")
    - Click "Generate Adventure"
-   - Wait for AI to create your unique story
+   - Wait for AI to create your unique educational story
 
-3. **Gameplay**:
-   - Read the story content
-   - Make choices to progress
-   - Manage your health and make strategic choices
-   - Discover multiple endings
+4. **Gameplay**:
+   - Read the generated story content
+   - Make choices to progress (mix of story and educational decisions)
+   - Manage your health (hearts) - wrong answers cost hearts
+   - Discover multiple endings based on your performance
 
 ## 🛠️ Technical Architecture
 
 ### Core Components
 
-- **Adventure Engine** (`useAdventureGame`): Manages game state and logic
-- **Story Renderer** (`StoryStep`): Displays rich text content with markdown
+- **Adventure Engine** (`useStreamingAdventure`): Manages game state, streaming, and logic
+- **Story Renderer** (`StreamingStoryStep`): Displays rich text content with markdown and streaming
 - **Choice System** (`ChoiceButton`): Interactive decision-making interface
 - **Game Status** (`GameStatus`): Health, stats, and progress tracking
-- **AI Generator** (`AdventureGenerator`): OpenAI-powered story creation
+- **AI Generator** (`AdventureGenerator`): Multi-step setup and OpenAI-powered story creation
+
+### Key Features
+
+- **Streaming Content**: Real-time story generation with progressive loading
+- **Educational Integration**: Subject-specific questions mixed with adventure choices
+- **Smart Difficulty**: Adaptive story length and complexity based on selected level
+- **Health System**: Strategic consequences for incorrect educational answers
+- **Image Generation**: Optional AI-generated visuals for immersive storytelling
 
 ### Data Structure
 
-Adventures follow a structured JSON format with:
+Adventures use a dynamic streaming format with:
 
-- **Steps**: Individual story segments with content and choices
-- **Choices**: Player decisions with optional conditions
-- **Effects**: Automatic state changes (inventory)
-- **Conditions**: Requirements for displaying certain choices
+- **Steps**: Generated story segments with content and choices
+- **Choices**: Player decisions with correctness indicators (`correct: true/false`)
+- **Effects**: Automatic state changes (heart loss for wrong answers)
+- **Context**: Educational subject and difficulty level integration
 
 ## 🎨 Customization
 
-### Creating Manual Adventures
-
-Add new adventures to `src/data/` following the `Adventure` interface:
-
-```typescript
-export const myAdventure: Adventure = {
-  id: "my-adventure",
-  title: "My Adventure",
-  description: "An exciting journey",
-  startingStepId: "start",
-  steps: {
-    start: {
-      id: "start",
-      title: "The Beginning",
-      content: "Your adventure starts here...",
-      choices: [
-        /* ... */
-      ],
-      onEnter: [
-        /* optional effects */
-      ],
-    },
-  },
-};
-```
-
 ### Styling
 
-The app uses Tailwind CSS with a custom gradient theme. Modify styles in component files or extend the Tailwind configuration.
+The app uses Tailwind CSS v4 with a custom gradient theme. Modify styles in component files or customize the gradient system in the UI components.
+
+### Adding Educational Subjects
+
+Add new subjects to `src/constants/index.ts`:
+
+```typescript
+export const EDUCATIONAL_SUBJECTS = [
+  // existing subjects...
+  {
+    id: "new-subject",
+    name: "New Subject",
+    description: "Description of the subject",
+  },
+];
+```
+
+### Modifying Adventure Prompts
+
+Update the adventure suggestions in `src/constants/subjects.ts`:
+
+```typescript
+export const ADVENTURE_PROMPTS = [
+  // Add your custom adventure prompts here
+  "Your custom adventure prompt",
+];
+```
 
 ## 📝 AI Prompt Tips
 
@@ -156,13 +168,14 @@ For best results when generating adventures:
 - Be specific about setting and theme
 - Include character roles or objectives
 - Mention desired complexity level
-- Specify any special mechanics you want
+- Consider how educational elements can be naturally integrated
 
 Example prompts:
 
 - "A detective solving supernatural crimes in Victorian London"
 - "A time traveler trying to prevent a historical disaster"
 - "A cyberpunk hacker uncovering a corporate conspiracy"
+- "An underwater explorer discovering an ancient civilization"
 
 ## 🚀 Deployment
 
@@ -171,7 +184,8 @@ Example prompts:
 1. Push your code to a Git repository
 2. Connect to [Vercel](https://vercel.com)
 3. Add your `OPENAI_API_KEY` environment variable
-4. Deploy!
+4. Optionally add `NEXT_PUBLIC_ENABLE_IMAGE_GENERATION=true` for image generation
+5. Deploy!
 
 ### Other Platforms
 
@@ -202,6 +216,13 @@ If you encounter issues:
 2. Ensure you have sufficient OpenAI credits
 3. Review the browser console for error messages
 4. Open an issue on GitHub with details
+
+## 🔧 Development Notes
+
+- The app uses **streaming responses** for real-time story generation
+- Educational questions are dynamically integrated into adventure stories
+- Image generation is optional and disabled by default for cost control
+- The game uses a **heart system** where wrong educational answers cost health
 
 ---
 
