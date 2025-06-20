@@ -29,6 +29,11 @@ interface UseStreamingAdventureReturn {
   storyHistory: StoryHistory;
 }
 
+// Check if image generation is enabled via environment variable
+const isImageGenerationEnabled = () => {
+  return process.env.NEXT_PUBLIC_ENABLE_IMAGE_GENERATION === "true";
+};
+
 export function useStreamingAdventure(
   metadata: DynamicAdventureMetadata | null
 ): UseStreamingAdventureReturn {
@@ -40,8 +45,8 @@ export function useStreamingAdventure(
   const [isLoadingStep, setIsLoadingStep] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recentEffects, setRecentEffects] = useState<GameEffect[]>([]);
-  const [currentStepImage] = useState<string | null>(null);
-  // const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [currentStepImage, setCurrentStepImage] = useState<string | null>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
   // Story history for context
   const [storyHistory, setStoryHistory] = useState<StoryHistory>([]);
@@ -153,38 +158,49 @@ export function useStreamingAdventure(
   }, []);
 
   // Generate image for current step
-  // const generateStepImage = useCallback(
-  //   async (step: StoryStep) => {
-  //     if (!metadata?.theme || !step.content || isGeneratingImage) return;
+  const generateStepImage = useCallback(
+    async (step: StoryStep) => {
+      // Skip image generation if disabled via environment variable
+      if (!isImageGenerationEnabled()) {
+        console.log("Image generation is disabled via environment variable");
+        return;
+      }
 
-  //     setIsGeneratingImage(true);
-  //     try {
-  //       const response = await fetch("/api/generate-image", {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           stepDescription: step.content,
-  //           theme: metadata.theme,
-  //         }),
-  //       });
+      if (!metadata?.theme || !step.content || isGeneratingImage) return;
 
-  //       if (!response.ok) {
-  //         throw new Error("Failed to generate image");
-  //       }
+      setIsGeneratingImage(true);
+      try {
+        const response = await fetch("/api/generate-image", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            stepDescription: step.content,
+            theme: metadata.theme,
+          }),
+        });
 
-  //       const { imageUrl } = await response.json();
-  //       setCurrentStepImage(imageUrl);
-  //     } catch (err) {
-  //       console.error("Failed to generate step image:", err);
-  //       // Don't set error state for image generation failures
-  //     } finally {
-  //       setIsGeneratingImage(false);
-  //     }
-  //   },
-  //   [metadata?.theme, isGeneratingImage]
-  // );
+        if (!response.ok) {
+          // If image generation is disabled (403), silently skip without error
+          if (response.status === 403) {
+            console.log("Image generation is disabled via feature flag");
+            return;
+          }
+          throw new Error("Failed to generate image");
+        }
+
+        const { imageUrl } = await response.json();
+        setCurrentStepImage(imageUrl);
+      } catch (err) {
+        console.error("Failed to generate step image:", err);
+        // Don't set error state for image generation failures
+      } finally {
+        setIsGeneratingImage(false);
+      }
+    },
+    [metadata?.theme, isGeneratingImage]
+  );
 
   const generateStreamingStep = useCallback(
     async (
@@ -292,8 +308,7 @@ export function useStreamingAdventure(
             hasSufficientContent(streamingStep.content)
           ) {
             imageGenerationTriggered = true;
-            // Temporarily disabled image generation because it's expensive
-            // generateStepImage(streamingStep);
+            generateStepImage(streamingStep);
           }
         }
 
@@ -320,7 +335,7 @@ export function useStreamingAdventure(
       }
     },
     [
-      // generateStepImage,
+      generateStepImage,
       hasSufficientContent,
       metadata,
       parseMetadata,

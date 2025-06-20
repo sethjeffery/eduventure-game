@@ -6,6 +6,14 @@ const openai = new OpenAI({
 });
 
 export async function POST(request: NextRequest) {
+  // Feature flag check - return early if image generation is disabled
+  if (process.env.ENABLE_IMAGE_GENERATION !== "true") {
+    return NextResponse.json(
+      { error: "Image generation is disabled" },
+      { status: 403 }
+    );
+  }
+
   try {
     const { stepDescription, theme } = await request.json();
 

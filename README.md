@@ -57,7 +57,27 @@ npm run dev
 
 ```bash
 OPENAI_API_KEY=your_openai_api_key_here
+
+# Feature Flags
+# Set to "true" to enable AI image generation for story steps (expensive!)
+# Set to "false" or remove to disable image generation (recommended for cost control)
+NEXT_PUBLIC_ENABLE_IMAGE_GENERATION=false
+ENABLE_IMAGE_GENERATION=false
 ```
+
+### Image Generation (Optional)
+
+The app supports AI-generated images for story steps using DALL-E 3, but this feature is **disabled by default** due to cost considerations:
+
+- **Cost**: Each image costs approximately $0.04-0.08 via OpenAI API
+- **Performance**: Images take 10-30 seconds to generate
+- **Storage**: Images are served directly from OpenAI (temporary URLs)
+
+To enable image generation:
+
+1. Set both environment variables to `"true"` in your `.env.local` file
+2. Deploy/restart your application
+3. Images will automatically generate for story steps with sufficient content
 
 ## 🎮 How to Play
 
