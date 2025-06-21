@@ -18,7 +18,7 @@ export function ChoiceButton({
       onClick={onClick}
       disabled={disabled}
       className={`
-        w-full text-left p-4 rounded-lg transition-all duration-200 transform shadow-lg
+        w-full text-left p-4 rounded-lg transition-all duration-200 transform shadow-lg min-h-[60px]
         ${
           disabled
             ? "bg-gray-600/25 border-gray-500 text-gray-600 cursor-not-allowed"

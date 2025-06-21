@@ -11,20 +11,23 @@ import {
   StoryContext,
   StepMetadata,
   StoryHistory,
+  RegenerateMetadataRequest,
+  RegenerateMetadataResponse,
 } from "@/types/adventure";
 import { gameCompleted, gameOver } from "@/constants";
+import { validateChoices } from "@/lib/choice-validator";
 
 interface UseStreamingAdventureReturn {
   metadata: DynamicAdventureMetadata | null;
   gameState: GameState;
   currentStep: StoryStep | null;
   isLoadingStep: boolean;
+  isRegeneratingMetadata: boolean;
   error: string | null;
   recentEffects: GameEffect[];
   currentStepImage: string | null;
   makeChoice: (choice: Choice) => Promise<void>;
   continueStory: () => Promise<void>;
-  canMakeChoice: (choice: Choice) => boolean;
   dismissEffects: () => void;
   storyHistory: StoryHistory;
 }
@@ -43,6 +46,7 @@ export function useStreamingAdventure(
   const isStarted = useRef(false);
   const [currentStep, setCurrentStep] = useState<StoryStep | null>(null);
   const [isLoadingStep, setIsLoadingStep] = useState(false);
+  const [isRegeneratingMetadata, setIsRegeneratingMetadata] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recentEffects, setRecentEffects] = useState<GameEffect[]>([]);
   const [currentStepImage, setCurrentStepImage] = useState<string | null>(null);
@@ -51,15 +55,59 @@ export function useStreamingAdventure(
   // Story history for context
   const [storyHistory, setStoryHistory] = useState<StoryHistory>([]);
 
-  const canMakeChoice = useCallback((): boolean => {
-    // All choices are available since no conditions are supported
-    return true;
-  }, []);
+  // Regenerate metadata for current step
+  const regenerateMetadata = useCallback(
+    async (step: StoryStep, context: StoryContext): Promise<Choice[]> => {
+      console.log("Regenerating metadata for step:", step.title);
+      setIsRegeneratingMetadata(true);
+
+      try {
+        const request: RegenerateMetadataRequest = {
+          storyContent: step.content,
+          stepTitle: step.title,
+          context,
+        };
+
+        const response = await fetch("/api/regenerate-metadata", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(request),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to regenerate metadata");
+        }
+
+        const result: RegenerateMetadataResponse = await response.json();
+
+        if (!result.success || !result.choices) {
+          throw new Error(result.error || "Invalid metadata response");
+        }
+
+        // Validate the regenerated choices
+        if (!validateChoices(result.choices)) {
+          throw new Error("Regenerated choices still don't match schema");
+        }
+
+        console.log("Successfully regenerated metadata:", result.choices);
+        return result.choices;
+      } catch (err) {
+        console.error("Failed to regenerate metadata:", err);
+        throw err;
+      } finally {
+        setIsRegeneratingMetadata(false);
+      }
+    },
+    []
+  );
 
   const parseMetadata = useCallback(
     (
       fullContent: string,
       storyHistory: StoryHistory,
+      gameState: GameState,
       choiceHadEffects?: boolean,
       choiceEffectType?: "positive" | "negative"
     ): Partial<StoryStep> => {
@@ -90,7 +138,9 @@ export function useStreamingAdventure(
           content = contentMatch ? contentMatch[1].trim() : "";
 
           hasLoadedContent = true;
-          choices = metadata.choices?.filter((choice) => choice) || [];
+
+          // Store raw choices without validation - validation happens later
+          choices = metadata.choices || [];
         } catch {
           // Fall through to handle as no metadata
           return {};
@@ -148,7 +198,7 @@ export function useStreamingAdventure(
         choices: choices.sort(() => Math.random() - 0.5),
       };
     },
-    [gameState.hearts, metadata?.difficultyLevel]
+    [metadata?.difficultyLevel]
   );
 
   // Check if step has sufficient content for image generation (50+ words)
@@ -293,6 +343,7 @@ export function useStreamingAdventure(
             parseMetadata(
               fullContent,
               [...storyHistory, streamingStep],
+              gameState,
               choiceHadEffects,
               choiceEffectType
             )
@@ -314,6 +365,38 @@ export function useStreamingAdventure(
 
         streamingStep.isStreaming = false;
         streamingStep.hasLoadedContent = true;
+
+        // Final validation: Check if we need metadata regeneration for steps with choices
+        const needsChoices =
+          ["regular", "educational"].includes(streamingStep.stepType) &&
+          !streamingStep.isEnding &&
+          !choiceHadEffects;
+
+        if (needsChoices) {
+          const hasValidChoices =
+            streamingStep.choices.length > 0 &&
+            validateChoices(streamingStep.choices);
+
+          if (!hasValidChoices) {
+            try {
+              console.log(
+                "Invalid or missing choices detected, regenerating metadata..."
+              );
+              const regeneratedChoices = await regenerateMetadata(
+                streamingStep,
+                context
+              );
+              streamingStep.choices = regeneratedChoices;
+            } catch (regenerationError) {
+              console.error(
+                "Failed to regenerate metadata:",
+                regenerationError
+              );
+              setError("Failed to generate valid choices. Please try again.");
+              return;
+            }
+          }
+        }
 
         if (prevStep) {
           setStoryHistory((prev) => [
@@ -341,6 +424,7 @@ export function useStreamingAdventure(
       parseMetadata,
       currentStep,
       storyHistory,
+      regenerateMetadata,
     ]
   );
 
@@ -400,12 +484,12 @@ export function useStreamingAdventure(
     gameState,
     currentStep,
     isLoadingStep,
+    isRegeneratingMetadata,
     error,
     recentEffects,
     currentStepImage,
     makeChoice,
     continueStory,
-    canMakeChoice,
     dismissEffects,
     storyHistory,
   };

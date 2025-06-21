@@ -87,14 +87,14 @@ export function AdventureSetupStep({
               <RandomSuggestionButton
                 onRandomSelect={onRandomPrompt}
                 disabled={isGenerating}
-                tooltipContent="Get a random adventure idea"
+                tooltipContent="Get a random idea"
                 className="absolute top-3 right-3"
                 size={20}
               />
             </div>
-            <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+            <p className="text-xs text-gray-500 mt-2 flex items-center gap-1 text-left">
               <MagicWand size={14} />
-              Click the magic wand for a random adventure idea
+              Click the magic wand for a random idea
             </p>
           </div>
 
@@ -134,11 +134,16 @@ export function AdventureSetupStep({
                   <Target size={20} weight="fill" />
                 )
               }
-              className="transform hover:scale-105 disabled:hover:scale-100"
+              className="transform hover:scale-[1.02] disabled:hover:scale-100"
             >
-              {isGenerating
-                ? "Generating Adventure..."
-                : "Start Learning Adventure"}
+              <span className="hidden md:block">
+                {isGenerating
+                  ? "Generating Adventure..."
+                  : "Start Learning Adventure"}
+              </span>
+              <span className="block md:hidden">
+                {isGenerating ? "Generating..." : "Start"}
+              </span>
             </GradientButton>
           </div>
         </div>

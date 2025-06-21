@@ -42,9 +42,7 @@ export const gameCompleted = (
     "difficultyLevel" | "storyHistory" | "choiceHadEffects"
   > | null
 ) => {
-  return Boolean(
-    context && gameProgress(context) >= 100 && !context.choiceHadEffects
-  );
+  return Boolean(context && gameProgress(context) >= 100);
 };
 
 // Educational subjects for 8-12 year olds

@@ -14,7 +14,7 @@ export function ImageDisplay({
   }
 
   return (
-    <div className="bg-radial from-white to-transparent backdrop-blur-md backdrop-brightness-150 rounded-lg border border-white border-opacity-20 shadow-lg overflow-hidden">
+    <div className="rounded-lg border border-white border-opacity-20 shadow-lg overflow-hidden">
       <img
         src={imageUrl}
         alt={alt}

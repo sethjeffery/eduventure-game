@@ -65,8 +65,8 @@ const createStoryStepInstructions = (context: StoryContext) => {
   const isGameOver = gameOver(context);
   const isGameCompleted = gameCompleted(context);
 
-  // ending step
-  if (isGameCompleted) {
+  // ending step - prioritize game completion
+  if (isGameCompleted && !isGameOver) {
     return `- The adventure should conclude. Create a satisfying ending based on the player's journey and choices.
 - Write 100-180 words in short readable paragraphs of engaging content to finish the story, and nothing else.`;
   }
@@ -122,8 +122,10 @@ choices:
   return `---
 choices:
   - text: "A good choice"
+    correct: true
   - text: "A bad choice"
     correct: false
   - text: "Another good choice"
+    correct: true
   `;
 };

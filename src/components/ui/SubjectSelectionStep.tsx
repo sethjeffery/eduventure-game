@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import clsx from "clsx";
 import { BackgroundWrapper } from "./BackgroundWrapper";
 import { MenuCard } from "./Panel";
-import { GradientButton, GradientButtonWithIcon } from "./GradientButton";
+import { GradientButton } from "./GradientButton";
 import { RandomSuggestionButton } from "./RandomSuggestionButton";
 import {
   GraduationCap,
@@ -131,6 +131,7 @@ export function SubjectSelectionStep({
 
               return (
                 <GradientButton
+                  align="left"
                   key={subject.id}
                   onClick={() => onSubjectSelect(subject.id)}
                   variant="custom"
@@ -174,7 +175,7 @@ export function SubjectSelectionStep({
           {/* OR Divider */}
           <div className="relative flex items-center justify-center">
             <div className="flex-grow border-t border-gray-300"></div>
-            <span className="flex-shrink mx-4 text-gray-500 font-medium bg-white px-2">
+            <span className="flex-shrink mx-4 font-medium px-2 text-shadow-white">
               OR
             </span>
             <div className="flex-grow border-t border-gray-300"></div>
@@ -198,21 +199,33 @@ export function SubjectSelectionStep({
                 />
                 <RandomSuggestionButton
                   onRandomSelect={handleRandomSubject}
-                  tooltipContent="Get a random subject idea"
+                  tooltipContent="Get a random idea"
                   className="absolute top-1/2 right-3 transform -translate-y-1/2"
                   size={18}
                 />
               </div>
 
-              <GradientButtonWithIcon
-                onClick={handleCustomSubjectSubmit}
-                disabled={!customSubject.trim()}
-                variant="primary"
-                size="md"
-                arrow
-              >
-                Continue
-              </GradientButtonWithIcon>
+              <div className="block md:hidden">
+                <GradientButton
+                  onClick={handleCustomSubjectSubmit}
+                  disabled={!customSubject.trim()}
+                  variant="primary"
+                  size="md"
+                  arrow
+                />
+              </div>
+
+              <div className="hidden md:block">
+                <GradientButton
+                  onClick={handleCustomSubjectSubmit}
+                  disabled={!customSubject.trim()}
+                  variant="primary"
+                  size="md"
+                  arrow
+                >
+                  Continue
+                </GradientButton>
+              </div>
             </div>
           </div>
         </div>

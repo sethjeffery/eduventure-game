@@ -34,12 +34,12 @@ export async function POST(request: NextRequest) {
         ? `GENERATE THE INTRODUCTION: Set the opening scene for the story with 2-3 meaningful choices in a random order.`
         : isGameOver
         ? "GENERATE A DEATH STEP: The player has run out of hearts and died. Create a dramatic death scene that explains how they met their demise based on the story so far. This should be a definitive game over."
+        : isGameCompleted
+        ? "GENERATE AN ENDING STEP: The adventure should conclude. Create a satisfying ending based on the player's journey and choices."
         : context.choiceHadEffects && context.choiceEffectType === "negative"
         ? "GENERATE A CONSEQUENCE-NEGATIVE STEP: Show the bad consequences of the player's choice, losing a heart."
         : context.choiceHadEffects && context.choiceEffectType === "positive"
         ? "GENERATE A CONSEQUENCE-POSITIVE STEP: Show the positive results of the player's choice."
-        : isGameCompleted
-        ? "GENERATE AN ENDING STEP: The adventure should conclude. Create a satisfying ending based on the player's journey and choices."
         : context.choiceType === "educational"
         ? `GENERATE AN EDUCATIONAL STEP: An educational challenge with 3-4 choices related to ${context.educationalSubject}. Difficulty: ${context.difficultyLevel}.
 - Integrate the question naturally into the story context. Make it feel like part of the adventure, not a quiz.

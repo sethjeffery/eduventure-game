@@ -57,6 +57,7 @@ export function DifficultySelectionStep({
 
               return (
                 <GradientButton
+                  align="left"
                   arrow
                   key={level.id}
                   icon={<Icon size={28} weight="fill" />}
@@ -66,7 +67,7 @@ export function DifficultySelectionStep({
                   size="lg"
                   fullWidth
                 >
-                  <div className="flex flex-col items-start text-shadow-sm">
+                  <div className="flex flex-col text-shadow-sm">
                     <h3 className="font-bold text-xl">{level.name}</h3>
                     <p className="text-sm">{level.description}</p>
                   </div>

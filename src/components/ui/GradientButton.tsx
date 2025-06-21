@@ -2,8 +2,9 @@ import React from "react";
 import clsx from "clsx";
 
 export interface GradientButtonProps {
+  align?: "left" | "center" | "right";
   arrow?: boolean;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   onClick?: () => void;
   disabled?: boolean;
   className?: string;
@@ -97,6 +98,7 @@ const SIZE_STYLES = {
 };
 
 export function GradientButton({
+  align = "center",
   arrow = false,
   children,
   onClick,
@@ -127,6 +129,7 @@ export function GradientButton({
     "rounded-xl",
     "transition-all duration-300 transform",
     "shadow-lg",
+    "text-left",
 
     // Size styles
     sizeStyles,
@@ -145,7 +148,7 @@ export function GradientButton({
     // Disabled state
     disabled
       ? "opacity-50 cursor-not-allowed"
-      : ["cursor-pointer group", "hover:scale-[102%]", finalHoverGradient],
+      : ["cursor-pointer group", "hover:scale-[1.02]", finalHoverGradient],
 
     // Custom className
     className
@@ -177,7 +180,15 @@ export function GradientButton({
           </div>
         )}
 
-        <div className={icon || arrow ? "mr-auto" : "mx-auto"}>{children}</div>
+        {children && (
+          <div
+            className={
+              icon || arrow || align === "left" ? "mr-auto" : "mx-auto"
+            }
+          >
+            {children}
+          </div>
+        )}
 
         {arrow && (
           <div
@@ -201,50 +212,5 @@ export function GradientButton({
         )}
       </div>
     </button>
-  );
-}
-
-// Convenience component for buttons with icons
-interface GradientButtonWithIconProps extends GradientButtonProps {
-  icon?: React.ReactNode;
-  iconPosition?: "left" | "right";
-}
-
-export function GradientButtonWithIcon({
-  children,
-  iconPosition = "left",
-  icon,
-  variant = "primary",
-  ...props
-}: GradientButtonWithIconProps) {
-  const variantStyles = VARIANT_STYLES[variant];
-  const finalIconBg = props.iconBg || variantStyles.iconBg;
-
-  return (
-    <GradientButton variant={variant} {...props}>
-      <div className="flex items-center gap-3">
-        {iconPosition === "left" && icon && (
-          <div
-            className={clsx(
-              "p-2 rounded-full inset-shadow-sm group-hover:bg-opacity-70 transition-all duration-300",
-              finalIconBg
-            )}
-          >
-            {icon}
-          </div>
-        )}
-        <span className="drop-shadow-sm">{children}</span>
-        {iconPosition === "right" && icon && (
-          <div
-            className={clsx(
-              "p-2 rounded-full inset-shadow-sm group-hover:bg-opacity-70 transition-all duration-300",
-              finalIconBg
-            )}
-          >
-            {icon}
-          </div>
-        )}
-      </div>
-    </GradientButton>
   );
 }

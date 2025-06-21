@@ -24,6 +24,7 @@ export interface StoryStep {
   hasLoadedContent?: boolean;
   isEnding?: boolean;
   isStreaming?: boolean;
+  needsMetadataRegeneration?: boolean;
 }
 
 export type StoryHistory = Array<StoryStep & { choice?: string }>;
@@ -74,4 +75,17 @@ export interface StepMetadata {
   stepType?: StoryStep["stepType"];
   choices?: Choice[];
   isEnding?: boolean;
+}
+
+// New interface for metadata regeneration
+export interface RegenerateMetadataRequest {
+  storyContent: string;
+  stepTitle: string;
+  context: StoryContext;
+}
+
+export interface RegenerateMetadataResponse {
+  choices: Choice[];
+  success: boolean;
+  error?: string;
 }

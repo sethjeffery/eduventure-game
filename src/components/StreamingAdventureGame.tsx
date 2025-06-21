@@ -23,12 +23,12 @@ export function StreamingAdventureGame({
     gameState,
     currentStep,
     isLoadingStep,
+    isRegeneratingMetadata,
     error,
     recentEffects,
     currentStepImage,
     makeChoice,
     continueStory,
-    canMakeChoice,
     dismissEffects,
     storyHistory,
   } = useStreamingAdventure(adventureMetadata);
@@ -49,7 +49,7 @@ export function StreamingAdventureGame({
   return (
     <BackgroundWrapper className="p-4">
       <div className="max-w-6xl mx-auto relative z-10">
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col-reverse lg:flex-row gap-6">
           {/* Main Game Area */}
           <div className="lg:w-2/3 space-y-6">
             {/* Story Content - Always use StreamingStoryStep */}
@@ -60,9 +60,9 @@ export function StreamingAdventureGame({
                 error={error}
                 gameState={gameState}
                 isLoadingStep={isLoadingStep}
+                isRegeneratingMetadata={isRegeneratingMetadata}
                 onChoice={handleChoice}
                 onContinue={handleContinue}
-                canMakeChoice={canMakeChoice}
                 storyHistory={storyHistory}
               />
             )}

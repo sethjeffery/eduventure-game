@@ -18,7 +18,7 @@ export function RandomSuggestionButton({
   size = 20,
 }: RandomSuggestionButtonProps) {
   return (
-    <Tooltip content={tooltipContent} position="left" className={className}>
+    <Tooltip content={tooltipContent} position="top" className={className}>
       <button
         onClick={onRandomSelect}
         disabled={disabled}
