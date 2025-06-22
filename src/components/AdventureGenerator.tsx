@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { DynamicAdventureMetadata } from "@/types/adventure";
 import {
   EDUCATIONAL_SUBJECTS,
@@ -11,6 +11,9 @@ import { ADVENTURE_PROMPTS } from "@/constants/subjects";
 import { SubjectSelectionStep } from "./ui/SubjectSelectionStep";
 import { DifficultySelectionStep } from "./ui/DifficultySelectionStep";
 import { AdventureSetupStep } from "./ui/AdventureSetupStep";
+import { EduVentureIcon } from "./ui/EduVentureIcon";
+import { MenuCard } from "./ui/Panel";
+import { BackgroundWrapper } from "./ui/BackgroundWrapper";
 
 interface AdventureGeneratorProps {
   onAdventureGenerated: (metadata: DynamicAdventureMetadata) => void;
@@ -18,110 +21,149 @@ interface AdventureGeneratorProps {
 
 type SetupStep = "subject" | "difficulty" | "adventure";
 
+function CurrentStep({
+  step,
+  onDifficultySelect,
+  onSubjectSelect,
+  onBack,
+  onPromptSelect,
+  error,
+}: {
+  step: SetupStep;
+  onDifficultySelect: (difficulty: DifficultyLevel) => void;
+  onSubjectSelect: (subject: EducationalSubject | string) => void;
+  onBack: () => void;
+  onPromptSelect: (prompt: string) => void;
+  error: string | null;
+}) {
+  switch (step) {
+    case "subject":
+      return <SubjectSelectionStep onSubjectSelect={onSubjectSelect} />;
+    case "difficulty":
+      return (
+        <DifficultySelectionStep
+          onDifficultySelect={onDifficultySelect}
+          onBack={onBack}
+        />
+      );
+    case "adventure":
+      return (
+        <AdventureSetupStep
+          error={error}
+          onPromptSelect={onPromptSelect}
+          onBack={onBack}
+        />
+      );
+    default:
+      return null;
+  }
+}
+
 export function AdventureGenerator({
   onAdventureGenerated,
 }: AdventureGeneratorProps) {
   const [currentStep, setCurrentStep] = useState<SetupStep>("subject");
+
   const [educationalSubject, setEducationalSubject] = useState<
-    EducationalSubject | string | null
-  >(null);
+    EducationalSubject | string
+  >("");
+
   const [difficultyLevel, setDifficultyLevel] =
-    useState<DifficultyLevel | null>(null);
-  const [prompt, setPrompt] = useState(() => {
+    useState<DifficultyLevel>("easy");
+
+  const [, setPrompt] = useState(() => {
     const randomIndex = Math.floor(Math.random() * ADVENTURE_PROMPTS.length);
     return ADVENTURE_PROMPTS[randomIndex];
   });
-  const [isGenerating, setIsGenerating] = useState(false);
+
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubjectSelect = (subject: EducationalSubject | string) => {
-    setEducationalSubject(subject);
-    setCurrentStep("difficulty");
-  };
+  const handleSubjectSelect = useCallback(
+    (subject: EducationalSubject | string) => {
+      setEducationalSubject(subject);
+      setCurrentStep("difficulty");
+    },
+    []
+  );
 
-  const handleDifficultySelect = (difficulty: DifficultyLevel) => {
+  const handleDifficultySelect = useCallback((difficulty: DifficultyLevel) => {
     setDifficultyLevel(difficulty);
     setCurrentStep("adventure");
-  };
+  }, []);
 
-  const handleGenerate = async () => {
-    if (!prompt.trim() || !educationalSubject || !difficultyLevel) {
-      setError("Please complete all setup steps.");
-      return;
-    }
+  const handleGenerate = useCallback(
+    async (
+      educationalSubject: EducationalSubject | string,
+      difficultyLevel: DifficultyLevel,
+      prompt: string
+    ) => {
+      if (!prompt.trim() || !educationalSubject || !difficultyLevel) {
+        setError("Please complete all setup steps.");
+        return;
+      }
 
-    setIsGenerating(true);
-    setError(null);
+      setError(null);
 
-    try {
-      // Convert EducationalSubject to string if needed
-      const subjectString =
-        typeof educationalSubject === "string"
-          ? educationalSubject
-          : EDUCATIONAL_SUBJECTS.find((s) => s.id === educationalSubject)
-              ?.name || educationalSubject;
+      try {
+        // Convert EducationalSubject to string if needed
+        const subjectString =
+          typeof educationalSubject === "string"
+            ? educationalSubject
+            : EDUCATIONAL_SUBJECTS.find((s) => s.id === educationalSubject)
+                ?.name || educationalSubject;
 
-      // Create metadata with educational features
-      const metadata: DynamicAdventureMetadata = {
-        title: "Your Educational Adventure Begins...",
-        description: `An educational adventure: ${prompt.trim()}`,
-        theme: prompt.trim(),
-        educationalSubject: subjectString,
-        difficultyLevel,
-      };
+        // Create metadata with educational features
+        const metadata: DynamicAdventureMetadata = {
+          title: "Your Educational Adventure Begins...",
+          description: `An educational adventure: ${prompt.trim()}`,
+          theme: prompt.trim(),
+          educationalSubject: subjectString,
+          difficultyLevel,
+        };
 
-      onAdventureGenerated(metadata);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "An unexpected error occurred"
-      );
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+        onAdventureGenerated(metadata);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "An unexpected error occurred"
+        );
+      }
+    },
+    [onAdventureGenerated]
+  );
 
-  const handleRandomPrompt = () => {
-    if (isGenerating) return;
-    const randomIndex = Math.floor(Math.random() * ADVENTURE_PROMPTS.length);
-    setPrompt(ADVENTURE_PROMPTS[randomIndex]);
-  };
+  const handlePromptSelect = useCallback(
+    (prompt: string) => {
+      setPrompt(prompt);
+      handleGenerate(educationalSubject, difficultyLevel, prompt);
+    },
+    [educationalSubject, difficultyLevel, handleGenerate]
+  );
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     if (currentStep === "difficulty") {
       setCurrentStep("subject");
-      setDifficultyLevel(null);
     } else if (currentStep === "adventure") {
       setCurrentStep("difficulty");
     }
-  };
+  }, [currentStep]);
 
   // Render appropriate step component
-  switch (currentStep) {
-    case "subject":
-      return <SubjectSelectionStep onSubjectSelect={handleSubjectSelect} />;
-
-    case "difficulty":
-      return (
-        <DifficultySelectionStep
+  return (
+    <BackgroundWrapper className="flex items-center justify-center p-4">
+      <MenuCard>
+        <h1 className="text-4xl text-black mb-4 flex items-center justify-center gap-3 font-[family-name:var(--font-adventure)]">
+          <EduVentureIcon size={32} />
+          EduVenture
+        </h1>
+        <CurrentStep
+          step={currentStep}
           onDifficultySelect={handleDifficultySelect}
+          onSubjectSelect={handleSubjectSelect}
           onBack={handleBack}
-        />
-      );
-
-    case "adventure":
-      return (
-        <AdventureSetupStep
-          prompt={prompt}
-          isGenerating={isGenerating}
+          onPromptSelect={handlePromptSelect}
           error={error}
-          onPromptChange={setPrompt}
-          onRandomPrompt={handleRandomPrompt}
-          onGenerate={handleGenerate}
-          onBack={handleBack}
         />
-      );
-
-    default:
-      return null;
-  }
+      </MenuCard>
+    </BackgroundWrapper>
+  );
 }

@@ -1,11 +1,8 @@
 import React, { useState } from "react";
 import clsx from "clsx";
-import { BackgroundWrapper } from "./BackgroundWrapper";
-import { MenuCard } from "./Panel";
 import { GradientButton } from "./GradientButton";
 import { RandomSuggestionButton } from "./RandomSuggestionButton";
 import {
-  GraduationCap,
   Calculator,
   Flask,
   Buildings,
@@ -103,133 +100,111 @@ export function SubjectSelectionStep({
   };
 
   return (
-    <BackgroundWrapper className="flex items-center justify-center p-4">
-      <MenuCard>
-        <div className="text-center mb-8">
-          <h1 className="text-4xl text-black mb-2 flex items-center justify-center gap-3 font-[family-name:var(--font-adventure)]">
-            <GraduationCap
-              size={32}
-              weight="fill"
-              className="text-purple-600"
-            />
-            EduVenture
-          </h1>
-          <p className="text-gray-600">
-            Learn while you adventure! Choose your subject to study:
-          </p>
-        </div>
+    <div className="space-y-6">
+      <h2 className="text-xl font-semibold text-center text-black mb-6">
+        What subject should I test you on?
+      </h2>
 
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-center text-black mb-6">
-            What subject should I test you on?
-          </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {EDUCATIONAL_SUBJECTS.map((subject) => {
+          const colors = SUBJECT_COLORS[subject.id];
+          const Icon = EDUCATIONAL_SUBJECTS_ICONS[subject.id];
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {EDUCATIONAL_SUBJECTS.map((subject) => {
-              const colors = SUBJECT_COLORS[subject.id];
-              const Icon = EDUCATIONAL_SUBJECTS_ICONS[subject.id];
-
-              return (
-                <GradientButton
-                  align="left"
-                  key={subject.id}
-                  onClick={() => onSubjectSelect(subject.id)}
-                  variant="custom"
-                  size="lg"
-                  fullWidth
-                  gradient={colors.gradient}
-                  hoverGradient={colors.hoverGradient}
-                  shadow="light"
-                  iconBg={colors.iconBg}
-                  className="p-6"
-                >
-                  <div className="flex items-center justify-between text-white">
-                    <div className="flex items-center space-x-4">
-                      <div
-                        className={clsx(
-                          "p-3 rounded-full inset-shadow-sm group-hover:bg-opacity-70 transition-all duration-300",
-                          colors.iconBg
-                        )}
-                      >
-                        <Icon
-                          size={28}
-                          weight="fill"
-                          className="drop-shadow-sm"
-                        />
-                      </div>
-                      <div className="text-left text-shadow-sm">
-                        <h3 className="text-2xl mb-1 drop-shadow-sm font-[family-name:var(--font-adventure)]">
-                          {subject.name}
-                        </h3>
-                        <p className="text-sm opacity-90 font-medium">
-                          {subject.description}
-                        </p>
-                      </div>
-                    </div>
+          return (
+            <GradientButton
+              align="left"
+              key={subject.id}
+              onClick={() => onSubjectSelect(subject.id)}
+              variant="custom"
+              size="lg"
+              fullWidth
+              gradient={colors.gradient}
+              hoverGradient={colors.hoverGradient}
+              shadow="light"
+              iconBg={colors.iconBg}
+              className="p-6"
+            >
+              <div className="flex items-center justify-between text-white">
+                <div className="flex items-center space-x-4">
+                  <div
+                    className={clsx(
+                      "p-3 rounded-full inset-shadow-sm group-hover:bg-opacity-70 transition-all duration-300",
+                      colors.iconBg
+                    )}
+                  >
+                    <Icon size={28} weight="fill" className="drop-shadow-sm" />
                   </div>
-                </GradientButton>
-              );
-            })}
+                  <div className="text-left text-shadow-sm">
+                    <h3 className="text-2xl mb-1 drop-shadow-sm font-[family-name:var(--font-adventure)]">
+                      {subject.name}
+                    </h3>
+                    <p className="text-sm opacity-90 font-medium">
+                      {subject.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </GradientButton>
+          );
+        })}
+      </div>
+
+      {/* OR Divider */}
+      <div className="relative flex items-center justify-center">
+        <div className="flex-grow border-t border-gray-300"></div>
+        <span className="flex-shrink mx-4 font-medium px-2 text-shadow-white">
+          OR
+        </span>
+        <div className="flex-grow border-t border-gray-300"></div>
+      </div>
+
+      {/* Custom Subject Input */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-center text-black">
+          Enter any subject you&apos;d like to learn about:
+        </h3>
+
+        <div className="flex gap-3 items-center">
+          <div className="relative flex-1">
+            <input
+              type="text"
+              value={customSubject}
+              onChange={(e) => setCustomSubject(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="e.g., Astronomy, Psychology, Cooking, Music Theory..."
+              className="w-full px-4 py-3 pr-12 border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none text-black placeholder-gray-500 shadow bg-white"
+            />
+            <RandomSuggestionButton
+              onRandomSelect={handleRandomSubject}
+              tooltipContent="Get a random idea"
+              className="absolute top-1/2 right-3 transform -translate-y-1/2"
+              size={18}
+            />
           </div>
 
-          {/* OR Divider */}
-          <div className="relative flex items-center justify-center">
-            <div className="flex-grow border-t border-gray-300"></div>
-            <span className="flex-shrink mx-4 font-medium px-2 text-shadow-white">
-              OR
-            </span>
-            <div className="flex-grow border-t border-gray-300"></div>
+          <div className="block md:hidden">
+            <GradientButton
+              onClick={handleCustomSubjectSubmit}
+              disabled={!customSubject.trim()}
+              variant="primary"
+              size="md"
+              arrow
+            />
           </div>
 
-          {/* Custom Subject Input */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-center text-black">
-              Enter any subject you&apos;d like to learn about:
-            </h3>
-
-            <div className="flex gap-3 items-center">
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  value={customSubject}
-                  onChange={(e) => setCustomSubject(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="e.g., Astronomy, Psychology, Cooking, Music Theory..."
-                  className="w-full px-4 py-3 pr-12 border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none text-black placeholder-gray-500 shadow bg-white"
-                />
-                <RandomSuggestionButton
-                  onRandomSelect={handleRandomSubject}
-                  tooltipContent="Get a random idea"
-                  className="absolute top-1/2 right-3 transform -translate-y-1/2"
-                  size={18}
-                />
-              </div>
-
-              <div className="block md:hidden">
-                <GradientButton
-                  onClick={handleCustomSubjectSubmit}
-                  disabled={!customSubject.trim()}
-                  variant="primary"
-                  size="md"
-                  arrow
-                />
-              </div>
-
-              <div className="hidden md:block">
-                <GradientButton
-                  onClick={handleCustomSubjectSubmit}
-                  disabled={!customSubject.trim()}
-                  variant="primary"
-                  size="md"
-                  arrow
-                >
-                  Continue
-                </GradientButton>
-              </div>
-            </div>
+          <div className="hidden md:block">
+            <GradientButton
+              onClick={handleCustomSubjectSubmit}
+              disabled={!customSubject.trim()}
+              variant="primary"
+              size="md"
+              arrow
+            >
+              Continue
+            </GradientButton>
           </div>
         </div>
-      </MenuCard>
-    </BackgroundWrapper>
+      </div>
+    </div>
   );
 }

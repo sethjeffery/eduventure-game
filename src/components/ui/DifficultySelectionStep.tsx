@@ -1,8 +1,6 @@
 import React from "react";
-import { BackgroundWrapper } from "./BackgroundWrapper";
-import { MenuCard } from "./Panel";
 import { GradientButton } from "./GradientButton";
-import { GraduationCap, Baby, Robot, Alien } from "phosphor-react";
+import { Baby, Robot, Alien } from "phosphor-react";
 import { DIFFICULTY_LEVELS, DifficultyLevel } from "@/constants";
 import BackButton from "./BackButton";
 
@@ -25,62 +23,47 @@ export function DifficultySelectionStep({
   onBack,
 }: DifficultySelectionStepProps) {
   return (
-    <BackgroundWrapper className="flex items-center justify-center p-4">
-      <MenuCard>
-        <div className="text-center mb-8">
-          <h1 className="text-4xl text-black mb-2 flex items-center justify-center gap-3 font-[family-name:var(--font-adventure)]">
-            <GraduationCap
-              size={32}
-              weight="fill"
-              className="text-purple-600"
-            />
-            EduVenture
-          </h1>
-        </div>
+    <div className="space-y-4">
+      <h2 className="text-xl font-semibold text-center text-black mb-6">
+        Choose your difficulty level:
+      </h2>
 
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-center text-black mb-6">
-            Choose your difficulty level:
-          </h2>
+      <div className="space-y-4">
+        {DIFFICULTY_LEVELS.map((level) => {
+          const Icon = DIFFICULTY_LEVELS_ICONS[level.id];
 
-          <div className="space-y-4">
-            {DIFFICULTY_LEVELS.map((level) => {
-              const Icon = DIFFICULTY_LEVELS_ICONS[level.id];
+          // Map difficulty colors to gradient button variants
+          const variant =
+            level.color === "green"
+              ? "success"
+              : level.color === "yellow"
+              ? "warning"
+              : "danger";
 
-              // Map difficulty colors to gradient button variants
-              const variant =
-                level.color === "green"
-                  ? "success"
-                  : level.color === "yellow"
-                  ? "warning"
-                  : "danger";
+          return (
+            <GradientButton
+              align="left"
+              arrow
+              key={level.id}
+              icon={<Icon size={28} weight="fill" />}
+              onClick={() => onDifficultySelect(level.id)}
+              variant={variant}
+              shadow="light"
+              size="lg"
+              fullWidth
+            >
+              <div className="flex flex-col text-shadow-sm">
+                <h3 className="text-2xl font-[family-name:var(--font-adventure)]">
+                  {level.name}
+                </h3>
+                <p className="text-sm">{level.description}</p>
+              </div>
+            </GradientButton>
+          );
+        })}
+      </div>
 
-              return (
-                <GradientButton
-                  align="left"
-                  arrow
-                  key={level.id}
-                  icon={<Icon size={28} weight="fill" />}
-                  onClick={() => onDifficultySelect(level.id)}
-                  variant={variant}
-                  shadow="light"
-                  size="lg"
-                  fullWidth
-                >
-                  <div className="flex flex-col text-shadow-sm">
-                    <h3 className="text-2xl font-[family-name:var(--font-adventure)]">
-                      {level.name}
-                    </h3>
-                    <p className="text-sm">{level.description}</p>
-                  </div>
-                </GradientButton>
-              );
-            })}
-          </div>
-
-          <BackButton onBack={onBack} />
-        </div>
-      </MenuCard>
-    </BackgroundWrapper>
+      <BackButton onBack={onBack} />
+    </div>
   );
 }
