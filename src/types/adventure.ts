@@ -31,12 +31,14 @@ export interface StoryStep {
 export type StoryHistory = Array<StoryStep & { choice?: string }>;
 
 export interface GameEffect {
-  type: "lose_heart";
+  type: "lose_heart" | "gain_score" | "lose_score";
   name: string;
+  value?: number; // For score changes
 }
 
 export interface GameState {
   hearts: number;
+  score: number;
 }
 
 // New types for dynamic adventure generation
@@ -54,7 +56,7 @@ export interface StoryContext {
     text?: string;
     effectType?: "positive" | "negative" | null;
   };
-  gameState: Pick<GameState, "hearts">;
+  gameState: Pick<GameState, "hearts" | "score">;
   history: StoryHistory;
   subject: string;
   level: string;

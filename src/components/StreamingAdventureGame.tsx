@@ -73,8 +73,10 @@ export function StreamingAdventureGame({
                   Game Over!
                 </h3>
                 <p className="text-red-100 mb-6">
-                  You have run out of health! Your adventure has ended. Be more
-                  careful next time!
+                  You have run out of health! Your adventure has ended with a
+                  final score of <strong>{gameState.score} points</strong>.
+                  <br />
+                  Be more careful next time!
                 </p>
                 <button
                   onClick={handleNewAdventure}
@@ -99,7 +101,8 @@ export function StreamingAdventureGame({
                       ? "1 heart"
                       : `${gameState.hearts} hearts`}
                   </strong>{" "}
-                  remaining.
+                  remaining and earned a final score of{" "}
+                  <strong>{gameState.score} points</strong>!
                   <br />
                   Would you like to start a new adventure?
                 </p>
@@ -149,7 +152,11 @@ export function StreamingAdventureGame({
 
           {/* Sidebar */}
           <div className="lg:w-1/3">
-            <GameStatus gameState={gameState} stepImage={currentStepImage} />
+            <GameStatus
+              gameState={gameState}
+              stepImage={currentStepImage}
+              recentEffects={recentEffects}
+            />
           </div>
         </div>
       </div>

@@ -11,6 +11,7 @@ const getUserPrompt = (context: StoryContext) => {
         return `GENERATE A FINAL CHALLENGE: An educational challenge with 3-4 choices related to ${context.subject}. Difficulty: ${context.level}.
 - Integrate the question naturally into the story context as a final challenge. Make it feel like part of the adventure, not a quiz.
 - Only one choice should be correct (marked with correct: true), others should be incorrect (marked with correct: false).
+- Choice text should be in string quotes. Any quotes within the text should be escaped with a backslash.
 - Questions should be age-appropriate for 8-12 year olds at ${context.level} difficulty level.
 - Do not repeat a question that has already been asked in the story.`;
       }
@@ -18,6 +19,7 @@ const getUserPrompt = (context: StoryContext) => {
       return `GENERATE AN EDUCATIONAL STEP: An educational challenge with 3-4 choices related to ${context.subject}. Difficulty: ${context.level}.
 - Integrate the question naturally into the story context. Make it feel like part of the adventure, not a quiz.
 - Only one choice should be correct (marked with correct: true), others should be incorrect (marked with correct: false).
+- Choice text should be in string quotes. Any quotes within the text should be escaped with a backslash.
 - Questions should be age-appropriate for 8-12 year olds at ${context.level} difficulty level.
 - Do not repeat a question that has already been asked in the story.`;
     case "consequence-negative":
@@ -35,6 +37,7 @@ const getUserPrompt = (context: StoryContext) => {
       return `GENERATE A REGULAR STEP: Normal story progression with 2-3 meaningful choices in a random order.
 - Focus on story progression and character development
 - Mark safe choices with correct: true and dangerous choices with correct: false.
+- Choice text should be in string quotes. Any quotes within the text should be escaped with a backslash.
 - Include choices that could have positive or negative consequences.`;
   }
 };

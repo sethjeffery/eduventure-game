@@ -1,6 +1,6 @@
 import React from "react";
 import { GameEffect } from "@/types/adventure";
-import { HeartBreak, X } from "phosphor-react";
+import { HeartBreak, X, TrendUp } from "phosphor-react";
 
 interface GameNotificationsProps {
   effects: GameEffect[];
@@ -17,8 +17,8 @@ export function GameNotifications({
     effect: GameEffect
   ): {
     message: string;
-    type: "danger" | "success" | "info" | "warning";
-    icon: React.ReactNode;
+    type?: "danger" | "success" | "info" | "warning";
+    icon?: React.ReactNode;
   } => {
     switch (effect.type) {
       case "lose_heart":
@@ -27,11 +27,15 @@ export function GameNotifications({
           type: "danger",
           icon: <HeartBreak size={20} weight="fill" />,
         };
+      case "gain_score":
+        return {
+          message: `Great job! You earned ${effect.value || 10} points!`,
+          type: "success",
+          icon: <TrendUp size={20} weight="fill" />,
+        };
       default:
         return {
-          message: "Something happened...",
-          type: "info",
-          icon: <HeartBreak size={20} weight="regular" />,
+          message: "",
         };
     }
   };
@@ -56,7 +60,7 @@ export function GameNotifications({
     <div className="space-y-2 my-6">
       {effects.map((effect, index) => {
         const { message, type, icon } = getEffectMessage(effect);
-        return (
+        return type && message ? (
           <div key={index} className={getAlertClasses(type)}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -73,7 +77,7 @@ export function GameNotifications({
               )}
             </div>
           </div>
-        );
+        ) : null;
       })}
     </div>
   );

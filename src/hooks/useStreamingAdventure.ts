@@ -41,6 +41,7 @@ export function useStreamingAdventure(
 ): UseStreamingAdventureReturn {
   const [gameState, setGameState] = useState<GameState>({
     hearts: 3,
+    score: 0,
   });
   const isStarted = useRef(false);
   const [currentStep, setCurrentStep] = useState<StoryStep | null>(null);
@@ -339,21 +340,57 @@ export function useStreamingAdventure(
         ...gameState,
       };
 
-      // Handle the new correct/incorrect choice logic
-      if (choice.correct === false) {
-        // Incorrect choice - lose a heart
-        const effect = { type: "lose_heart" as const, name: "Heart lost" };
-        setRecentEffects([effect]);
-        newState.hearts = Math.max(0, newState.hearts - 1);
+      const effects: GameEffect[] = [];
+
+      // Handle educational step scoring
+      if (currentStep?.stepType === "educational") {
+        if (choice.correct === true) {
+          // Correct answer - gain points
+          const scoreGain = 10;
+          newState.score += scoreGain;
+          effects.push({
+            type: "gain_score",
+            name: "Score gained",
+            value: scoreGain,
+          });
+        } else if (choice.correct === false) {
+          // Incorrect answer - lose points and heart
+          const scoreLoss = -5;
+
+          // Only show score loss effect if player actually had points to lose
+          if (newState.score + scoreLoss >= 0) {
+            newState.score += scoreLoss;
+            effects.push({
+              type: "lose_score",
+              name: "Score lost",
+              value: scoreLoss,
+            });
+          }
+
+          effects.push({
+            type: "lose_heart",
+            name: "Heart lost",
+          });
+
+          newState.hearts = Math.max(0, newState.hearts - 1);
+        }
       } else {
-        // Correct choice or no effect - clear any previous effects
-        setRecentEffects([]);
+        // Non-educational steps - handle traditional heart loss
+        if (choice.correct === false) {
+          // Incorrect choice - lose a heart
+          effects.push({
+            type: "lose_heart",
+            name: "Heart lost",
+          });
+          newState.hearts = Math.max(0, newState.hearts - 1);
+        }
       }
 
+      setRecentEffects(effects);
       setGameState(newState);
 
       // Determine effect type for context
-      const hasEffects = choice.correct === false;
+      const hasEffects = effects.length > 0;
       const effectType = hasEffects ? "negative" : undefined;
 
       await generateStreamingStep(
@@ -363,7 +400,7 @@ export function useStreamingAdventure(
         effectType
       );
     },
-    [gameState, generateStreamingStep]
+    [gameState, generateStreamingStep, currentStep?.stepType]
   );
 
   useEffect(() => {
