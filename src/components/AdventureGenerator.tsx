@@ -38,7 +38,12 @@ function CurrentStep({
 }) {
   switch (step) {
     case "subject":
-      return <SubjectSelectionStep onSubjectSelect={onSubjectSelect} />;
+      return (
+        <SubjectSelectionStep
+          onSubjectSelect={onSubjectSelect}
+          onBack={onBack}
+        />
+      );
     case "difficulty":
       return (
         <DifficultySelectionStep
@@ -48,11 +53,7 @@ function CurrentStep({
       );
     case "adventure":
       return (
-        <AdventureSetupStep
-          error={error}
-          onPromptSelect={onPromptSelect}
-          onBack={onBack}
-        />
+        <AdventureSetupStep error={error} onPromptSelect={onPromptSelect} />
       );
     default:
       return null;
@@ -62,16 +63,15 @@ function CurrentStep({
 export function AdventureGenerator({
   onAdventureGenerated,
 }: AdventureGeneratorProps) {
-  const [currentStep, setCurrentStep] = useState<SetupStep>("subject");
+  const [currentStep, setCurrentStep] = useState<SetupStep>("adventure");
 
   const [educationalSubject, setEducationalSubject] = useState<
     EducationalSubject | string
   >("");
 
-  const [difficultyLevel, setDifficultyLevel] =
-    useState<DifficultyLevel>("easy");
+  const [, setDifficultyLevel] = useState<DifficultyLevel>("easy");
 
-  const [, setPrompt] = useState(() => {
+  const [prompt, setPrompt] = useState(() => {
     const randomIndex = Math.floor(Math.random() * ADVENTURE_PROMPTS.length);
     return ADVENTURE_PROMPTS[randomIndex];
   });
@@ -85,11 +85,6 @@ export function AdventureGenerator({
     },
     []
   );
-
-  const handleDifficultySelect = useCallback((difficulty: DifficultyLevel) => {
-    setDifficultyLevel(difficulty);
-    setCurrentStep("adventure");
-  }, []);
 
   const handleGenerate = useCallback(
     async (
@@ -131,19 +126,24 @@ export function AdventureGenerator({
     [onAdventureGenerated]
   );
 
-  const handlePromptSelect = useCallback(
-    (prompt: string) => {
-      setPrompt(prompt);
-      handleGenerate(educationalSubject, difficultyLevel, prompt);
+  const handleDifficultySelect = useCallback(
+    (difficulty: DifficultyLevel) => {
+      setDifficultyLevel(difficulty);
+      handleGenerate(educationalSubject, difficulty, prompt);
     },
-    [educationalSubject, difficultyLevel, handleGenerate]
+    [educationalSubject, handleGenerate, prompt]
   );
+
+  const handlePromptSelect = useCallback((prompt: string) => {
+    setPrompt(prompt);
+    setCurrentStep("subject");
+  }, []);
 
   const handleBack = useCallback(() => {
     if (currentStep === "difficulty") {
       setCurrentStep("subject");
-    } else if (currentStep === "adventure") {
-      setCurrentStep("difficulty");
+    } else if (currentStep === "subject") {
+      setCurrentStep("adventure");
     }
   }, [currentStep]);
 

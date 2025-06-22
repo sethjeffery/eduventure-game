@@ -12,6 +12,7 @@ import {
 } from "phosphor-react";
 import { EDUCATIONAL_SUBJECTS, EducationalSubject } from "@/constants";
 import { SUBJECT_SUGGESTIONS } from "@/constants/subjects";
+import BackButton from "./BackButton";
 
 const EDUCATIONAL_SUBJECTS_ICONS = {
   maths: Calculator,
@@ -74,10 +75,12 @@ const SUBJECT_COLORS: Record<
 
 interface SubjectSelectionStepProps {
   onSubjectSelect: (subject: EducationalSubject | string) => void;
+  onBack: () => void;
 }
 
 export function SubjectSelectionStep({
   onSubjectSelect,
+  onBack,
 }: SubjectSelectionStepProps) {
   const [customSubject, setCustomSubject] = useState("");
 
@@ -205,6 +208,8 @@ export function SubjectSelectionStep({
           </div>
         </div>
       </div>
+
+      <BackButton onBack={onBack} />
     </div>
   );
 }

@@ -8,7 +8,7 @@ import { ADVENTURE_PROMPTS } from "@/constants/subjects";
 interface AdventureSetupStepProps {
   error: string | null;
   onPromptSelect: (prompt: string) => void;
-  onBack: () => void;
+  onBack?: () => void;
 }
 
 export function AdventureSetupStep({
@@ -66,19 +66,20 @@ export function AdventureSetupStep({
       )}
 
       {/* Action Buttons */}
-      <div className="flex justify-between">
-        <BackButton onBack={onBack} />
+      <div className={`flex ${onBack ? "justify-between" : "justify-end"}`}>
+        {onBack && <BackButton onBack={onBack} />}
 
         <GradientButton
           onClick={() => onPromptSelect(prompt)}
           disabled={!prompt.trim()}
           variant="primary"
           size="lg"
+          arrow
           icon={<Star size={20} weight="fill" />}
           className="transform hover:scale-[1.02] disabled:hover:scale-100"
         >
-          <span className="hidden md:block">Start My Adventure</span>
-          <span className="block md:hidden">Start</span>
+          <span className="hidden md:block">Build an adventure</span>
+          <span className="block md:hidden">Build</span>
         </GradientButton>
       </div>
     </div>
