@@ -14,15 +14,14 @@ import {
   RegenerateMetadataRequest,
   RegenerateMetadataResponse,
 } from "@/types/adventure";
-import { validateChoices } from "@/lib/choice-validator";
 import { buildStoryContext } from "@/app/helpers/buildStoryContext";
+import { validateChoices } from "@/lib/choice-validator";
 
 interface UseStreamingAdventureReturn {
   metadata: DynamicAdventureMetadata | null;
   gameState: GameState;
   currentStep: StoryStep | null;
   isLoadingStep: boolean;
-  isRegeneratingMetadata: boolean;
   error: string | null;
   recentEffects: GameEffect[];
   currentStepImage: string | null;
@@ -46,7 +45,6 @@ export function useStreamingAdventure(
   const isStarted = useRef(false);
   const [currentStep, setCurrentStep] = useState<StoryStep | null>(null);
   const [isLoadingStep, setIsLoadingStep] = useState(false);
-  const [isRegeneratingMetadata, setIsRegeneratingMetadata] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recentEffects, setRecentEffects] = useState<GameEffect[]>([]);
   const [currentStepImage, setCurrentStepImage] = useState<string | null>(null);
@@ -59,11 +57,11 @@ export function useStreamingAdventure(
   const regenerateMetadata = useCallback(
     async (step: StoryStep, context: StoryContext): Promise<Choice[]> => {
       console.log("Regenerating metadata for step:", step.title);
-      setIsRegeneratingMetadata(true);
 
       try {
         const request: RegenerateMetadataRequest = {
-          storyContent: step.content,
+          stepContent: step.content,
+          stepChoices: step.choices,
           stepTitle: step.title,
           context,
         };
@@ -82,13 +80,8 @@ export function useStreamingAdventure(
 
         const result: RegenerateMetadataResponse = await response.json();
 
-        if (!result.success || !result.choices) {
-          throw new Error(result.error || "Invalid metadata response");
-        }
-
-        // Validate the regenerated choices
         if (!validateChoices(result.choices)) {
-          throw new Error("Regenerated choices still don't match schema");
+          throw new Error(result.error || "Invalid metadata response");
         }
 
         console.log("Successfully regenerated metadata:", result.choices);
@@ -96,8 +89,6 @@ export function useStreamingAdventure(
       } catch (err) {
         console.error("Failed to regenerate metadata:", err);
         throw err;
-      } finally {
-        setIsRegeneratingMetadata(false);
       }
     },
     []
@@ -295,34 +286,18 @@ export function useStreamingAdventure(
         streamingStep.isStreaming = false;
         streamingStep.hasLoadedContent = true;
 
-        // Final validation: Check if we need metadata regeneration for steps with choices
-        const needsChoices = ["regular", "educational"].includes(
-          streamingStep.stepType
-        );
-
-        if (needsChoices) {
-          const hasValidChoices =
-            streamingStep.choices.length > 0 &&
-            validateChoices(streamingStep.choices);
-
-          if (!hasValidChoices) {
-            try {
-              console.log(
-                "Invalid or missing choices detected, regenerating metadata..."
-              );
-              const regeneratedChoices = await regenerateMetadata(
-                streamingStep,
-                context
-              );
-              streamingStep.choices = regeneratedChoices;
-            } catch (regenerationError) {
-              console.error(
-                "Failed to regenerate metadata:",
-                regenerationError
-              );
-              setError("Failed to generate valid choices. Please try again.");
-              return;
-            }
+        // Final validation: Double-check that the choices are valid and correct
+        if (streamingStep.stepType === "educational") {
+          try {
+            const regeneratedChoices = await regenerateMetadata(
+              streamingStep,
+              context
+            );
+            streamingStep.choices = regeneratedChoices;
+          } catch (regenerationError) {
+            console.error("Failed to regenerate metadata:", regenerationError);
+            setError("Failed to generate valid choices. Please try again.");
+            return;
           }
         }
 
@@ -412,7 +387,6 @@ export function useStreamingAdventure(
     gameState,
     currentStep,
     isLoadingStep,
-    isRegeneratingMetadata,
     error,
     recentEffects,
     currentStepImage,

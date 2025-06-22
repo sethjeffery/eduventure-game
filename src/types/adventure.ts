@@ -81,7 +81,8 @@ export interface StepMetadata {
 
 // New interface for metadata regeneration
 export interface RegenerateMetadataRequest {
-  storyContent: string;
+  stepContent: string;
+  stepChoices: Choice[] | null;
   stepTitle: string;
   context: StoryContext;
 }

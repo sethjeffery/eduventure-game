@@ -23,7 +23,6 @@ export function StreamingAdventureGame({
     gameState,
     currentStep,
     isLoadingStep,
-    isRegeneratingMetadata,
     error,
     recentEffects,
     currentStepImage,
@@ -60,7 +59,6 @@ export function StreamingAdventureGame({
                 error={error}
                 gameState={gameState}
                 isLoadingStep={isLoadingStep}
-                isRegeneratingMetadata={isRegeneratingMetadata}
                 onChoice={handleChoice}
                 onContinue={handleContinue}
                 storyHistory={storyHistory}

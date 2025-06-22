@@ -37,7 +37,7 @@ const getStepType = (
     return "ending";
   }
 
-  if (Math.random() < CHANCE_FOR_EDUCATIONAL_CHOICES) {
+  if (Math.random() < CHANCE_FOR_EDUCATIONAL_CHOICES && history.length > 0) {
     return "educational";
   }
 

@@ -72,8 +72,6 @@ const createStoryStepInstructions = (context: StoryContext) => {
 - The player has made a good choice. Create a compelling next step that flows positively from the story so far.`;
     }
     default: {
-      if (context.stepType === "educational" && context.progress === 100) {
-      }
       return `- Only provide the story content followed by a metadata section, no other text.
 - Create a compelling next step that flows naturally from the story so far.
 - Write 80-180 words in short readable paragraphs of engaging story content, followed by "---" and the YAML metadata.
