@@ -97,8 +97,7 @@ export function StreamingStoryStep({
 
         {/* Regular Choices */}
         {currentStep.choices.length > 0 &&
-        ["regular", "educational"].includes(currentStep.stepType) &&
-        !currentStep.isEnding ? (
+        ["regular", "educational"].includes(currentStep.stepType) ? (
           <div className="grid gap-3">
             {currentStep.choices.map((choice, index) => (
               <ChoiceButton
@@ -112,7 +111,7 @@ export function StreamingStoryStep({
         ) : (
           !isLoadingStep &&
           !isRegeneratingMetadata &&
-          !currentStep.isEnding &&
+          !["ending", "death"].includes(currentStep.stepType) &&
           gameState.hearts > 0 && (
             <>
               <div className="space-y-4 text-center">

@@ -1,4 +1,3 @@
-import { gameProgress } from "@/constants";
 import { StoryContext } from "@/types/adventure";
 import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources";
@@ -39,11 +38,8 @@ export class OpenAIStreamingService {
               role: "system",
               content: systemPrompt,
             },
-            ...context.storyHistory
-              .slice(
-                context.storyHistory.length - 5,
-                context.storyHistory.length
-              )
+            ...context.history
+              .slice(context.history.length - 5, context.history.length)
               .flatMap((step) => {
                 // Build comprehensive step summary
                 let stepSummary = `# ${step.title}\n\n`;
@@ -86,7 +82,7 @@ export class OpenAIStreamingService {
               role: "user" as const,
               content: `${userPrompt}\n\nCURRENT GAME STATE:
 - Hearts: ${context.gameState.hearts}/3 ❤️
-- Progress: ${gameProgress(context)}%`,
+- Progress: ${context.progress}%`,
             },
           ];
 

@@ -66,7 +66,6 @@ export function AdventureGenerator({
         title: "Your Educational Adventure Begins...",
         description: `An educational adventure: ${prompt.trim()}`,
         theme: prompt.trim(),
-        isDynamic: true,
         educationalSubject: subjectString,
         difficultyLevel,
       };

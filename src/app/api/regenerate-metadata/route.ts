@@ -40,9 +40,8 @@ CRITICAL REQUIREMENTS:
 - For adventure steps, mark safe choices as correct: true and dangerous ones as correct: false
 
 CONTEXT:
-- Educational Subject: ${context.educationalSubject || "N/A"}
-- Difficulty Level: ${context.difficultyLevel || "N/A"}
-- Step Type: ${context.choiceType || "adventure"}
+- Educational Subject: ${context.subject || "N/A"}
+- Difficulty Level: ${context.level || "N/A"}
 - Story Title: ${stepTitle}
 
 STORY CONTENT:
@@ -58,8 +57,8 @@ choices:
     correct: false`;
 
     const userPrompt =
-      context.choiceType === "educational"
-        ? `Generate educational choices related to ${context.educationalSubject} at ${context.difficultyLevel} difficulty level. Make the question feel natural to the story context. Only one choice should be correct.`
+      context.stepType === "educational"
+        ? `Generate educational choices related to ${context.subject} at ${context.level} difficulty level. Make the question feel natural to the story context. Only one choice should be correct.`
         : `Generate adventure choices that fit the story. Mark safe/good choices as correct: true and dangerous/bad choices as correct: false.`;
 
     // Use non-streaming OpenAI call for precise metadata generation

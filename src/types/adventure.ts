@@ -1,3 +1,11 @@
+export type StepType =
+  | "regular"
+  | "educational"
+  | "consequence-positive"
+  | "consequence-negative"
+  | "ending"
+  | "death";
+
 export interface Choice {
   text: string;
   correct?: boolean; // True for correct choices, false for incorrect ones
@@ -14,15 +22,8 @@ export interface StoryStep {
   title: string;
   content: string;
   choices: Choice[];
-  stepType:
-    | "regular"
-    | "educational"
-    | "consequence-positive"
-    | "consequence-negative"
-    | "ending"
-    | "death";
+  stepType: StepType;
   hasLoadedContent?: boolean;
-  isEnding?: boolean;
   isStreaming?: boolean;
   needsMetadataRegeneration?: boolean;
 }
@@ -43,21 +44,23 @@ export interface DynamicAdventureMetadata {
   title: string;
   description: string;
   theme: string; // The original prompt/theme
-  isDynamic: true;
   educationalSubject?: string;
   difficultyLevel?: "easy" | "medium" | "hard";
 }
 
 export interface StoryContext {
-  adventureTheme: string;
-  choiceText?: string;
-  choiceHadEffects?: boolean; // Did the last choice have consequences?
-  choiceEffectType?: "positive" | "negative"; // Type of effects from last choice
+  theme: string;
+  previousChoice: {
+    text?: string;
+    effectType?: "positive" | "negative" | null;
+  };
   gameState: Pick<GameState, "hearts">;
-  storyHistory: StoryHistory;
-  educationalSubject?: string;
-  difficultyLevel?: string;
-  choiceType?: "adventure" | "educational"; // Backend determines choice type
+  history: StoryHistory;
+  subject: string;
+  level: string;
+  progress: number;
+  stepsComplete: number;
+  stepType: StepType;
 }
 
 export interface GenerateStepRequest {
@@ -74,7 +77,6 @@ export interface StepMetadata {
   id?: string;
   stepType?: StoryStep["stepType"];
   choices?: Choice[];
-  isEnding?: boolean;
 }
 
 // New interface for metadata regeneration

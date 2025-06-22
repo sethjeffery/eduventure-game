@@ -14,8 +14,8 @@ import {
   RegenerateMetadataRequest,
   RegenerateMetadataResponse,
 } from "@/types/adventure";
-import { gameCompleted, gameOver } from "@/constants";
 import { validateChoices } from "@/lib/choice-validator";
+import { buildStoryContext } from "@/app/helpers/buildStoryContext";
 
 interface UseStreamingAdventureReturn {
   metadata: DynamicAdventureMetadata | null;
@@ -104,13 +104,7 @@ export function useStreamingAdventure(
   );
 
   const parseMetadata = useCallback(
-    (
-      fullContent: string,
-      storyHistory: StoryHistory,
-      gameState: GameState,
-      choiceHadEffects?: boolean,
-      choiceEffectType?: "positive" | "negative"
-    ): Partial<StoryStep> => {
+    (fullContent: string, context: StoryContext): Partial<StoryStep> => {
       // Check for error messages first
       if (fullContent.includes("---ERROR---")) {
         console.error("Error in generated content:", fullContent);
@@ -153,52 +147,15 @@ export function useStreamingAdventure(
           : "";
       }
 
-      // Infer step type and behavior based on StoryContext data
-      // Check if player is dead (0 hearts)
-      if (gameOver({ gameState: { hearts: gameState.hearts } })) {
-        return {
-          title,
-          content,
-          stepType: "death",
-          isEnding: true,
-        };
-      }
-
-      if (
-        gameCompleted({
-          difficultyLevel: metadata?.difficultyLevel,
-          storyHistory,
-          choiceHadEffects,
-        })
-      ) {
-        return {
-          title,
-          content,
-          stepType: "ending",
-          isEnding: true,
-        };
-      }
-
-      if (choiceHadEffects) {
-        return {
-          title,
-          content,
-          stepType:
-            choiceEffectType === "negative"
-              ? "consequence-negative"
-              : "consequence-positive",
-        };
-      }
-
       return {
+        stepType: context.stepType,
         hasLoadedContent,
         title,
         content,
-        isEnding: false,
         choices: choices.sort(() => Math.random() - 0.5),
       };
     },
-    [metadata?.difficultyLevel]
+    []
   );
 
   // Check if step has sufficient content for image generation (50+ words)
@@ -263,47 +220,28 @@ export function useStreamingAdventure(
       setError(null);
       const prevStep = currentStep;
 
-      // Determine choice type: 50% educational, 50% adventure (only for regular steps with educational context)
-      const shouldUseEducationalChoices =
-        metadata?.educationalSubject &&
-        !choiceHadEffects &&
-        gameState.hearts > 0 &&
-        !gameCompleted({
-          ...metadata,
-          storyHistory,
-          choiceHadEffects,
-        }) &&
-        Math.random() < 0.7; // 70% chance
-
-      // Create initial streaming step
-      const streamingStep: StoryStep = {
-        title: "",
-        content: "",
-        choices: [],
-        hasLoadedContent: false,
-        stepType: shouldUseEducationalChoices ? "educational" : "regular",
-        isEnding: false,
-        isStreaming: true,
-      };
-
-      setCurrentStep({ ...streamingStep });
-
       try {
-        const context: StoryContext = {
-          ...metadata,
-          adventureTheme: metadata?.theme ?? "",
-          choiceText,
-          choiceHadEffects,
-          choiceEffectType,
+        const context: StoryContext = buildStoryContext({
+          metadata,
+          previousChoice: {
+            text: choiceText,
+            effectType: choiceHadEffects ? choiceEffectType : null,
+          },
           gameState,
-          storyHistory: [
-            ...storyHistory.slice(0, -1),
-            ...(choiceText
-              ? [{ ...storyHistory.slice(-1)[0], choice: choiceText }]
-              : []),
-          ],
-          choiceType: shouldUseEducationalChoices ? "educational" : "adventure",
+          history: storyHistory,
+        });
+
+        // Create initial streaming step
+        const streamingStep: StoryStep = {
+          title: "",
+          content: "",
+          choices: [],
+          hasLoadedContent: false,
+          stepType: context.stepType,
+          isStreaming: true,
         };
+
+        setCurrentStep({ ...streamingStep });
 
         const response = await fetch("/api/generate-content", {
           method: "POST",
@@ -338,16 +276,7 @@ export function useStreamingAdventure(
           fullContent += chunk;
 
           // Parse streaming content and update the step in real-time
-          Object.assign(
-            streamingStep,
-            parseMetadata(
-              fullContent,
-              [...storyHistory, streamingStep],
-              gameState,
-              choiceHadEffects,
-              choiceEffectType
-            )
-          );
+          Object.assign(streamingStep, parseMetadata(fullContent, context));
 
           setCurrentStep({ ...streamingStep });
 
@@ -367,10 +296,9 @@ export function useStreamingAdventure(
         streamingStep.hasLoadedContent = true;
 
         // Final validation: Check if we need metadata regeneration for steps with choices
-        const needsChoices =
-          ["regular", "educational"].includes(streamingStep.stepType) &&
-          !streamingStep.isEnding &&
-          !choiceHadEffects;
+        const needsChoices = ["regular", "educational"].includes(
+          streamingStep.stepType
+        );
 
         if (needsChoices) {
           const hasValidChoices =
