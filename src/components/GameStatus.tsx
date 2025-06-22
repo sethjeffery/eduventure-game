@@ -76,7 +76,10 @@ export function GameStatus({
           }
         >
           <div className="flex items-center gap-2 justify-between">
-            <HeartsDisplay hearts={gameState.hearts} />
+            <h3 className="text-lg font-semibold text-white text-shadow-sm text-shadow-black/10 flex items-center gap-2">
+              Health
+              <HeartsDisplay hearts={gameState.hearts} />
+            </h3>
             <ScoreDisplay
               score={gameState.score}
               animate={scoreChange !== 0}

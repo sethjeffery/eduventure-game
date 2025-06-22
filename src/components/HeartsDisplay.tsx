@@ -27,7 +27,7 @@ export function HeartsDisplay({ hearts, maxHearts = 3 }: HeartsDisplayProps) {
             key={`filled-${i}`}
             size={20}
             weight="fill"
-            className={`relative transition-all duration-700 ${
+            className={`text-red-200 relative transition-all duration-700 ${
               i < hearts ? "opacity-100 scale-100" : "opacity-0 scale-125"
             }`}
           />

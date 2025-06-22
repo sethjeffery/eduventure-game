@@ -80,7 +80,7 @@ export function StreamingStoryStep({
       <div className="space-y-6">
         {/* Step Title */}
         {currentStep.title && (
-          <h2 className="text-3xl font-bold text-black text-center">
+          <h2 className="text-3xl text-black font-[family-name:var(--font-adventure)]">
             {currentStep.title}
           </h2>
         )}

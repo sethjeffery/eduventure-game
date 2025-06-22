@@ -111,7 +111,6 @@ export function AdventureGenerator({
     case "adventure":
       return (
         <AdventureSetupStep
-          selectedSubject={educationalSubject}
           prompt={prompt}
           isGenerating={isGenerating}
           error={error}

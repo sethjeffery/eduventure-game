@@ -22,9 +22,7 @@ export function ContentPanel({ children, className = "" }: PanelProps) {
 // Menu card panel - for menu screens
 export function MenuCard({ children, className = "" }: PanelProps) {
   return (
-    <ContentPanel className={`max-w-2xl text-center ${className}`}>
-      {children}
-    </ContentPanel>
+    <ContentPanel className={`max-w-2xl ${className}`}>{children}</ContentPanel>
   );
 }
 

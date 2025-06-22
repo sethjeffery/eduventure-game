@@ -7,7 +7,12 @@ import { StreamingStoryStep } from "./StreamingStoryStep";
 import { GameStatus } from "./GameStatus";
 import { BackgroundWrapper } from "./ui/BackgroundWrapper";
 import { ColoredPanel } from "./ui/Panel";
-import { MagicWand, Skull, Target } from "phosphor-react";
+import {
+  ArrowCounterClockwise,
+  MagicWand,
+  Skull,
+  Trophy,
+} from "phosphor-react";
 import { GradientButton } from "./ui/GradientButton";
 
 interface StreamingAdventureGameProps {
@@ -68,9 +73,9 @@ export function StreamingAdventureGame({
             {/* Game Over */}
             {!isLoadingStep && currentStep?.stepType === "death" && (
               <ColoredPanel color="red" className="text-center">
-                <h3 className="text-2xl font-bold text-white mb-4 flex items-center justify-center gap-3">
+                <h3 className="text-4xl text-white mb-4 flex items-center justify-center gap-3 font-[family-name:var(--font-pirate)] text-shadow-sm">
                   <Skull size={28} weight="fill" />
-                  Game Over!
+                  Game Over
                 </h3>
                 <p className="text-red-100 mb-6">
                   You have run out of health! Your adventure has ended with a
@@ -78,21 +83,22 @@ export function StreamingAdventureGame({
                   <br />
                   Be more careful next time!
                 </p>
-                <button
+                <GradientButton
                   onClick={handleNewAdventure}
-                  className="bg-white text-red-600 font-semibold py-3 px-8 rounded-lg hover:bg-red-50 transition-colors"
+                  icon={<ArrowCounterClockwise size={20} weight="fill" />}
+                  variant="white"
                 >
-                  Try Again
-                </button>
+                  Start Again
+                </GradientButton>
               </ColoredPanel>
             )}
 
             {/* Game Win */}
             {!isLoadingStep && currentStep?.stepType === "ending" && (
               <ColoredPanel color="purple" className="text-center">
-                <h3 className="text-2xl font-bold text-white mb-4 flex items-center justify-center gap-3">
-                  <Target size={28} weight="fill" />
-                  Adventure Complete!
+                <h3 className="text-4xl text-white mb-4 flex items-center justify-center gap-3 font-[family-name:var(--font-pirate)] text-shadow-sm">
+                  <Trophy size={28} weight="fill" />
+                  Adventure Complete
                 </h3>
                 <p className="mb-6">
                   Congratulations! You completed your adventure and earned a

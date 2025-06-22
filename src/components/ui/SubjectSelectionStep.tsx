@@ -106,7 +106,7 @@ export function SubjectSelectionStep({
     <BackgroundWrapper className="flex items-center justify-center p-4">
       <MenuCard>
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-black mb-2 flex items-center justify-center gap-3">
+          <h1 className="text-4xl text-black mb-2 flex items-center justify-center gap-3 font-[family-name:var(--font-adventure)]">
             <GraduationCap
               size={32}
               weight="fill"
@@ -158,7 +158,7 @@ export function SubjectSelectionStep({
                         />
                       </div>
                       <div className="text-left text-shadow-sm">
-                        <h3 className="font-bold text-xl mb-1 drop-shadow-sm">
+                        <h3 className="text-2xl mb-1 drop-shadow-sm font-[family-name:var(--font-adventure)]">
                           {subject.name}
                         </h3>
                         <p className="text-sm opacity-90 font-medium">

@@ -28,7 +28,7 @@ export function DifficultySelectionStep({
     <BackgroundWrapper className="flex items-center justify-center p-4">
       <MenuCard>
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-black mb-2 flex items-center justify-center gap-3">
+          <h1 className="text-4xl text-black mb-2 flex items-center justify-center gap-3 font-[family-name:var(--font-adventure)]">
             <GraduationCap
               size={32}
               weight="fill"
@@ -68,7 +68,9 @@ export function DifficultySelectionStep({
                   fullWidth
                 >
                   <div className="flex flex-col text-shadow-sm">
-                    <h3 className="font-bold text-xl">{level.name}</h3>
+                    <h3 className="text-2xl font-[family-name:var(--font-adventure)]">
+                      {level.name}
+                    </h3>
                     <p className="text-sm">{level.description}</p>
                   </div>
                 </GradientButton>

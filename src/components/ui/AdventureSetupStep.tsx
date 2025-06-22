@@ -4,11 +4,9 @@ import { MenuCard } from "./Panel";
 import { GradientButton } from "./GradientButton";
 import { RandomSuggestionButton } from "./RandomSuggestionButton";
 import { Target, Spinner, Mountains, MagicWand } from "phosphor-react";
-import { EducationalSubject } from "@/constants";
 import BackButton from "./BackButton";
 
 interface AdventureSetupStepProps {
-  selectedSubject: EducationalSubject | string | null;
   prompt: string;
   isGenerating: boolean;
   error: string | null;
@@ -19,7 +17,6 @@ interface AdventureSetupStepProps {
 }
 
 export function AdventureSetupStep({
-  selectedSubject,
   prompt,
   isGenerating,
   error,
@@ -28,36 +25,13 @@ export function AdventureSetupStep({
   onGenerate,
   onBack,
 }: AdventureSetupStepProps) {
-  const EDUCATIONAL_SUBJECTS = [
-    { id: "maths", name: "Maths" },
-    { id: "science", name: "Science" },
-    { id: "history", name: "History" },
-    { id: "geography", name: "Geography" },
-    { id: "language", name: "Language Arts" },
-    { id: "art", name: "Art & Culture" },
-  ] as const;
-
-  const selectedSubjectData = EDUCATIONAL_SUBJECTS.find(
-    (s) => s.id === selectedSubject
-  );
-
-  // Get display name for the subject
-  const getSubjectDisplayName = () => {
-    if (!selectedSubject) return "";
-    if (typeof selectedSubject === "string" && !selectedSubjectData) {
-      // Custom subject
-      return selectedSubject;
-    }
-    return selectedSubjectData?.name.toLowerCase() || selectedSubject;
-  };
-
   return (
     <BackgroundWrapper className="flex items-center justify-center p-4">
       <MenuCard>
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-black mb-2 flex items-center justify-center gap-3">
+          <h1 className="text-4xl text-black mb-2 flex items-center justify-center gap-3 font-[family-name:var(--font-adventure)]">
             <Mountains size={32} weight="fill" className="text-purple-600" />
-            EduVenture Generator
+            Theme Generator
           </h1>
           <p className="text-sm text-gray-500 mt-2">
             Your adventure will include both exciting story choices and
@@ -70,7 +44,7 @@ export function AdventureSetupStep({
           <div>
             <label
               htmlFor="prompt"
-              className="block text-lg font-semibold text-black mb-3"
+              className="block text-lg font-semibold text-black mb-2"
             >
               Describe your adventure setting:
             </label>
@@ -97,19 +71,6 @@ export function AdventureSetupStep({
               Click the magic wand for a random idea
             </p>
           </div>
-
-          {/* Streaming Content Display */}
-          {isGenerating && (
-            <div className="bg-blue-50 border border-blue-300 rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-blue-800 mb-2 flex items-center gap-2">
-                <Target size={20} weight="fill" className="text-blue-600" />
-                Starting Your Educational Adventure...
-              </h3>
-              <p className="text-sm text-blue-700">
-                Preparing your {getSubjectDisplayName()} adventure!
-              </p>
-            </div>
-          )}
 
           {/* Error Message */}
           {error && (
