@@ -5,6 +5,7 @@ import { ChoiceButton } from "./ChoiceButton";
 import { GameNotifications } from "./GameNotifications";
 import { MarkdownRenderer } from "@/lib/markdown";
 import { StoryHistory } from "@/types/adventure";
+import { GradientButton } from "./ui/GradientButton";
 
 interface StreamingStoryStepProps {
   currentStep: StoryStep | null;
@@ -29,8 +30,13 @@ export function StreamingStoryStep({
 }: StreamingStoryStepProps) {
   if (error) {
     return (
-      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
-        <strong>Error:</strong> {error}
+      <div className="flex gap-4">
+        <div className="flex-1 bg-red-800 border border-red-400 text-white px-4 py-3 rounded-lg">
+          <strong>Error:</strong> {error}
+        </div>
+        <GradientButton onClick={onContinue} variant="danger">
+          Try Again
+        </GradientButton>
       </div>
     );
   }

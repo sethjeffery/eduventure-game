@@ -95,14 +95,8 @@ export function StreamingAdventureGame({
                   Adventure Complete!
                 </h3>
                 <p className="mb-6">
-                  Congratulations! You completed your adventure with{" "}
-                  <strong>
-                    {gameState.hearts === 1
-                      ? "1 heart"
-                      : `${gameState.hearts} hearts`}
-                  </strong>{" "}
-                  remaining and earned a final score of{" "}
-                  <strong>{gameState.score} points</strong>!
+                  Congratulations! You completed your adventure and earned a
+                  final score of <strong>{gameState.score} points</strong>!
                   <br />
                   Would you like to start a new adventure?
                 </p>

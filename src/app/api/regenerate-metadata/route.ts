@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
           });
         } else {
           // Choices are invalid, we'll generate new ones
-          console.log(`Existing choices invalid`);
+          console.log(`Existing choices invalid`, finalChoices);
         }
       }
 

@@ -30,7 +30,7 @@ export function GameStatus({
         <StatusPanel
           className={
             gameState.hearts <= 1
-              ? "relative after:shadow-[0_0_10px_red] after:pulse after:content-[''] after:absolute after:rounded-lg"
+              ? "relative after:shadow-[0_0_10px_red] after:content-[''] after:animate-pulse"
               : ""
           }
         >

@@ -27,14 +27,17 @@ const getStepType = (
 
   const stepsComplete = getStepsComplete(history);
 
+  if (
+    stepsComplete >= getMaxSteps(metadata?.difficultyLevel) &&
+    previousChoice.effectType !== "negative"
+  ) {
+    return "ending";
+  }
+
   if (previousChoice.effectType) {
     return previousChoice.effectType === "positive"
       ? "consequence-positive"
       : "consequence-negative";
-  }
-
-  if (stepsComplete >= getMaxSteps(metadata?.difficultyLevel)) {
-    return "ending";
   }
 
   if (Math.random() < CHANCE_FOR_EDUCATIONAL_CHOICES && history.length > 0) {
