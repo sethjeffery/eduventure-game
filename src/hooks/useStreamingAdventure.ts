@@ -390,8 +390,19 @@ export function useStreamingAdventure(
       setGameState(newState);
 
       // Determine effect type for context
+      const hasNegativeEffects = effects.some(
+        (effect) => effect.type === "lose_heart" || effect.type === "lose_score"
+      );
+      const hasPositiveEffects = effects.some(
+        (effect) => effect.type === "gain_score"
+      );
+
       const hasEffects = effects.length > 0;
-      const effectType = hasEffects ? "negative" : undefined;
+      const effectType = hasNegativeEffects
+        ? "negative"
+        : hasPositiveEffects
+        ? "positive"
+        : undefined;
 
       await generateStreamingStep(
         newState,
