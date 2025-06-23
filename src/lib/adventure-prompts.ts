@@ -75,7 +75,7 @@ const createStoryStepInstructions = (context: StoryContext) => {
       return `- Only provide the story content followed by a metadata section, no other text.
 - Create a compelling next step that flows naturally from the story so far.
 - Write 80-180 words in short readable paragraphs of engaging story content, followed by "---" and the YAML metadata.
-- Include choices where some are correct (safe) and others are incorrect (will cause the player to lose a heart).
+- Include choices where some are correct (safe) and up to one may be incorrect (causing the player to lose a heart).
 - Mark choices with correct: true for safe choices and correct: false for dangerous ones.
 - Do not give obvious hints about which choices are correct or incorrect.
 - Do not repeat a question that has already been asked in the story.`;

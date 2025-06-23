@@ -81,8 +81,6 @@ export class OpenAIStreamingService {
             {
               role: "user" as const,
               content: `${userPrompt}\n\nCURRENT GAME STATE:
-- Hearts: ${context.gameState.hearts}/3 ❤️
-- Score: ${context.gameState.score} points 🏆
 - Progress: ${context.progress}%`,
             },
           ];
